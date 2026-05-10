@@ -1,0 +1,8 @@
+{
+  "name": "Image Forge",
+  "description": "A comprehensive web-based image processing tool that supports compression, format conversion, resizing, cropping, watermarking, and EXIF metadata editing. Features batch processing, WebP/HEIC support, Base64 encoding/decoding, and is PWA-ready for offline use.",
+  "requestFramePermissions": [
+    "notifications"
+  ],
+  "majorCapabilities": []
+}
