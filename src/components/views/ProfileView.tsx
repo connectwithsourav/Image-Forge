@@ -1,15 +1,35 @@
 import { useState, useRef, useEffect } from "react";
 import { DropzoneArea } from "../DropzoneArea";
 import { downloadFile } from "@/lib/shared";
-import { Download, RotateCcw, Image as ImageIcon, Circle, Square } from "lucide-react";
+import { Download, RotateCcw, Image as ImageIcon, Circle, Square, MonitorPlay } from "lucide-react";
+import Cropper from "react-easy-crop";
+import type { Area } from "react-easy-crop";
 
 export function ProfileView() {
   const [file, setFile] = useState<File | null>(null);
+  const [fileUrl, setFileUrl] = useState<string>("");
   const [result, setResult] = useState<File | null>(null);
   const [resultUrl, setResultUrl] = useState<string>("");
   const [shape, setShape] = useState<"square" | "circle">("circle");
   const [size, setSize] = useState<number>(400);
   const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  // Crop state
+  const [crop, setCrop] = useState({ x: 0, y: 0 });
+  const [zoom, setZoom] = useState(1);
+  const [croppedAreaPixels, setCroppedAreaPixels] = useState<Area | null>(null);
+
+  useEffect(() => {
+    if (file) {
+      const url = URL.createObjectURL(file);
+      setFileUrl(url);
+      return () => {
+        URL.revokeObjectURL(url);
+      };
+    } else {
+      setFileUrl("");
+    }
+  }, [file]);
 
   useEffect(() => {
     if (result) {
@@ -25,6 +45,9 @@ export function ProfileView() {
     if (acceptedFiles.length > 0) {
       setFile(acceptedFiles[0]); // Only one file for profile
       setResult(null);
+      setCrop({ x: 0, y: 0 });
+      setZoom(1);
+      setCroppedAreaPixels(null);
     }
   };
 
@@ -35,7 +58,7 @@ export function ProfileView() {
   };
 
   const handleCreate = async () => {
-    if (!file || !canvasRef.current) return;
+    if (!file || !canvasRef.current || !croppedAreaPixels) return;
     
     const canvas = canvasRef.current;
     const ctx = canvas.getContext("2d");
@@ -55,12 +78,17 @@ export function ProfileView() {
         ctx.clip();
       }
 
-      // center crop
-      const minDimension = Math.min(img.width, img.height);
-      const sx = (img.width - minDimension) / 2;
-      const sy = (img.height - minDimension) / 2;
-      
-      ctx.drawImage(img, sx, sy, minDimension, minDimension, 0, 0, size, size);
+      ctx.drawImage(
+        img,
+        croppedAreaPixels.x,
+        croppedAreaPixels.y,
+        croppedAreaPixels.width,
+        croppedAreaPixels.height,
+        0,
+        0,
+        size,
+        size
+      );
       
       canvas.toBlob((blob) => {
         if (blob) {
@@ -69,7 +97,7 @@ export function ProfileView() {
         }
       }, "image/png");
     };
-    img.src = URL.createObjectURL(file);
+    img.src = fileUrl;
   };
 
   return (
@@ -89,35 +117,55 @@ export function ProfileView() {
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         <div className="lg:col-span-7 space-y-6 lg:order-1">
-          <div className="bg-white/[0.02] backdrop-blur-3xl rounded-2xl border border-white/10 p-6 shadow-[0_8px_32px_rgba(0,0,0,0.5)]">
+          <div className="bg-white/[0.02] backdrop-blur-3xl rounded-2xl border border-white/10 p-6 shadow-[0_8px_32px_rgba(0,0,0,0.5)] flex flex-col h-full min-h-[500px]">
             {!file ? (
-              <DropzoneArea 
-                onDrop={handleDrop} 
-                label="Drop your photo" 
-                multiple={false} 
-              />
+              <div className="flex-1 flex flex-col justify-center">
+                <DropzoneArea 
+                  onDrop={handleDrop} 
+                  label="Drop your photo" 
+                  multiple={false} 
+                />
+              </div>
             ) : (
-              <div className="space-y-4">
-                <div className="p-4 bg-slate-900/50 border border-slate-800 rounded-xl flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <ImageIcon className="w-5 h-5 text-indigo-400" />
-                    <span className="text-sm font-medium text-slate-200">{file.name}</span>
-                  </div>
-                  <button 
-                    onClick={() => setFile(null)}
-                    className="text-xs text-red-400 hover:text-red-300 transition-colors"
-                  >
-                    Change Photo
-                  </button>
+              <div className="space-y-4 flex flex-col h-full flex-1">
+                <div className="flex items-center gap-2 text-indigo-300 font-semibold mb-2">
+                  <MonitorPlay className="w-5 h-5" />
+                  <span>Live Preview</span>
                 </div>
                 
-                <div className="mt-4 flex justify-end">
-                  <button 
-                    onClick={handleCreate} 
-                    className="bg-indigo-600 hover:bg-indigo-500 text-white px-6 py-2.5 rounded-lg font-medium flex items-center gap-2 transition-colors"
-                  >
-                    Create Profile Pic
-                  </button>
+                <div className="relative w-full flex-1 rounded-xl overflow-hidden bg-black/40 min-h-[400px] border border-white/10">
+                  <Cropper
+                    image={fileUrl}
+                    crop={crop}
+                    zoom={zoom}
+                    aspect={1}
+                    cropShape={shape === "circle" ? "round" : "rect"}
+                    showGrid={false}
+                    onCropChange={setCrop}
+                    onZoomChange={setZoom}
+                    onCropComplete={(_, croppedAreaPixels) => setCroppedAreaPixels(croppedAreaPixels)}
+                  />
+                </div>
+
+                <div className="p-4 bg-slate-900/50 border border-slate-800 rounded-xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                  <div className="flex items-center gap-3 overflow-hidden max-w-full">
+                    <ImageIcon className="w-5 h-5 flex-shrink-0 text-indigo-400" />
+                    <span className="text-sm font-medium text-slate-200 truncate">{file.name}</span>
+                  </div>
+                  <div className="flex items-center gap-3 w-full sm:w-auto">
+                    <button 
+                      onClick={() => setFile(null)}
+                      className="text-xs text-red-400 hover:text-red-300 hover:bg-red-500/10 px-3 py-2 rounded-lg transition-colors whitespace-nowrap"
+                    >
+                      Change Photo
+                    </button>
+                    <button 
+                      onClick={handleCreate} 
+                      className="bg-indigo-600 hover:bg-indigo-500 text-white px-5 py-2 rounded-lg text-sm font-medium transition-colors whitespace-nowrap"
+                    >
+                      Create Profile Pic
+                    </button>
+                  </div>
                 </div>
               </div>
             )}
