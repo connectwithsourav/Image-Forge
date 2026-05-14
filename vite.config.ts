@@ -13,6 +13,7 @@ export default defineConfig(({mode}) => {
       VitePWA({
         registerType: 'autoUpdate',
         devOptions: { enabled: true },
+        workbox: { maximumFileSizeToCacheInBytes: 5000000 },
         manifest: {
           name: 'Image Forge',
           short_name: 'ImageForge',

@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect } from "react";
 
 export function ComparisonSlider({ original, compressed }: { original: File, compressed: File }) {
   const [position, setPosition] = useState(50);

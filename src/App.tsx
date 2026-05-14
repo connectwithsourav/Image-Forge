@@ -8,6 +8,7 @@ import { OptimizerView } from "./components/views/OptimizerView";
 import { ProfileView } from "./components/views/ProfileView";
 import { MetadataView } from "./components/views/MetadataView";
 import { Base64View } from "./components/views/Base64View";
+import { ImageToPdfView } from "./components/views/ImageToPdfView";
 import { cn } from "./lib/utils";
 
 export default function App() {
@@ -23,6 +24,7 @@ export default function App() {
       case "profile": return <ProfileView />;
       case "metadata": return <MetadataView />;
       case "base64": return <Base64View />;
+      case "topdf": return <ImageToPdfView />;
       default: return <HomeView onChangeView={setView} />;
     }
   };

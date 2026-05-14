@@ -1,22 +1,27 @@
 import { ReactNode } from "react";
 import { useDropzone, DropzoneOptions } from "react-dropzone";
 import { UploadCloud } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn } from "../lib/utils";
 
-interface DropzoneAreaProps extends DropzoneOptions {
+export interface DropzoneAreaProps {
   children?: ReactNode;
   className?: string;
   label?: string;
+  onDrop?: (acceptedFiles: File[]) => void;
+  maxFiles?: number;
+  maxSize?: number;
+  multiple?: boolean;
 }
 
-export function DropzoneArea({ children, className, label = "Drag & drop images here, or click to select", maxFiles, maxSize, ...dropzoneOptions }: DropzoneAreaProps & { maxFiles?: number; maxSize?: number }) {
+export function DropzoneArea({ children, className, label = "Drag & drop images here, or click to select", maxFiles, maxSize, onDrop, multiple = true, ...props }: DropzoneAreaProps) {
   const { getRootProps, getInputProps, isDragActive, fileRejections } = useDropzone({
     accept: {
       'image/*': ['.jpeg', '.jpg', '.png', '.webp', '.gif', '.heic']
     },
     maxFiles,
     maxSize,
-    ...dropzoneOptions
+    multiple,
+    onDrop: onDrop as any
   });
 
   return (

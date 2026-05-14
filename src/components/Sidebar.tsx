@@ -7,12 +7,13 @@ import {
   Info,
   Menu,
   X,
-  Home
+  Home,
+  FileImage
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
 
-export type ViewType = 'home' | 'compress' | 'convert' | 'resize' | 'optimizer' | 'metadata' | 'base64' | 'profile';
+export type ViewType = 'home' | 'compress' | 'convert' | 'resize' | 'optimizer' | 'metadata' | 'base64' | 'profile' | 'topdf';
 
 interface SidebarProps {
   currentView: ViewType;
@@ -24,6 +25,7 @@ export const NAV_ITEMS = [
   { id: 'compress', label: 'Image Compressor', icon: Minimize, description: 'Reduce file size without losing quality' },
   { id: 'resize', label: 'Image Resizer', icon: Maximize, description: 'Scale images to strict dimensions' },
   { id: 'convert', label: 'Image Converter', icon: RefreshCcw, description: 'Convert between PNG, JPG, WEBP, etc.' },
+  { id: 'topdf', label: 'Image to PDF', icon: FileImage, description: 'Combine images into a PDF document' },
   { id: 'optimizer', label: 'Image Optimizer for Web', icon: Droplet, description: 'Perfect formats & sizes for web' },
   { id: 'profile', label: 'Profile Image Creator', icon: RefreshCcw, description: 'Crop and create perfect avatars' },
   { id: 'metadata', label: 'EXIF Metadata', icon: Info, description: 'View and strip image metadata' },
