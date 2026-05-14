@@ -41,6 +41,19 @@ export function HomeView({ onChangeView }: HomeViewProps) {
           );
         })}
       </div>
+      <div className="mt-16 text-center">
+        <p className="text-sm text-slate-500 mb-8">
+          Design and Developed by{" "}
+          <a 
+            href="https://connectwithsourav.com/" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="text-indigo-400 hover:text-indigo-300 hover:underline font-medium transition-colors"
+          >
+            Sourav Dutta
+          </a>
+        </p>
+      </div>
     </div>
   );
 }
