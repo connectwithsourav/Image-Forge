@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Sidebar, ViewType } from "./components/Sidebar";
+import { HomeView } from "./components/views/HomeView";
 import { CompressView } from "./components/views/CompressView";
 import { ConvertView } from "./components/views/ConvertView";
 import { ResizeView } from "./components/views/ResizeView";
@@ -7,12 +8,14 @@ import { OptimizerView } from "./components/views/OptimizerView";
 import { ProfileView } from "./components/views/ProfileView";
 import { MetadataView } from "./components/views/MetadataView";
 import { Base64View } from "./components/views/Base64View";
+import { cn } from "./lib/utils";
 
 export default function App() {
-  const [view, setView] = useState<ViewType>("compress");
+  const [view, setView] = useState<ViewType>("home");
 
   const renderView = () => {
     switch (view) {
+      case "home": return <HomeView onChangeView={setView} />;
       case "compress": return <CompressView />;
       case "convert": return <ConvertView />;
       case "resize": return <ResizeView />;
@@ -20,7 +23,7 @@ export default function App() {
       case "profile": return <ProfileView />;
       case "metadata": return <MetadataView />;
       case "base64": return <Base64View />;
-      default: return <CompressView />;
+      default: return <HomeView onChangeView={setView} />;
     }
   };
 
@@ -43,10 +46,13 @@ export default function App() {
         <div className="absolute top-[30%] left-[30%] w-[35vw] h-[35vw] rounded-full bg-indigo-600/40 opacity-70 animate-blob animation-delay-4000"></div>
       </div>
 
-      <Sidebar currentView={view} onChangeView={setView} />
+      {view !== 'home' && <Sidebar currentView={view} onChangeView={setView} />}
       
       {/* Glass pane to separate background from content */}
-      <main className="flex-1 overflow-y-auto h-full p-6 pt-32 lg:px-8 lg:pb-8 lg:pt-[56px] relative z-10 w-full bg-white/[0.01] backdrop-blur-[60px]">
+      <main className={cn(
+        "flex-1 overflow-y-auto h-full relative z-10 w-full bg-white/[0.01] backdrop-blur-[60px]",
+        view === 'home' ? "p-6 pt-12 lg:p-12" : "p-6 pt-32 lg:px-8 lg:pb-8 lg:pt-[56px]"
+      )}>
         <div className="max-w-5xl mx-auto w-full relative z-10">
           {renderView()}
         </div>

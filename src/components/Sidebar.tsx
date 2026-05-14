@@ -6,26 +6,28 @@ import {
   Code, 
   Info,
   Menu,
-  X
+  X,
+  Home
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
 
-export type ViewType = 'compress' | 'convert' | 'resize' | 'optimizer' | 'metadata' | 'base64' | 'profile';
+export type ViewType = 'home' | 'compress' | 'convert' | 'resize' | 'optimizer' | 'metadata' | 'base64' | 'profile';
 
 interface SidebarProps {
   currentView: ViewType;
   onChangeView: (view: ViewType) => void;
 }
 
-const NAV_ITEMS = [
-  { id: 'compress', label: 'Image Compressor', icon: Minimize },
-  { id: 'resize', label: 'Image Resizer', icon: Maximize },
-  { id: 'convert', label: 'Image Converter', icon: RefreshCcw },
-  { id: 'optimizer', label: 'Image Optimizer for Web', icon: Droplet },
-  { id: 'profile', label: 'Profile Image Creator', icon: RefreshCcw },
-  { id: 'metadata', label: 'EXIF Metadata', icon: Info },
-  { id: 'base64', label: 'Base64 Codec', icon: Code },
+export const NAV_ITEMS = [
+  { id: 'home', label: 'Home', icon: Home, description: 'Overview of all tools' },
+  { id: 'compress', label: 'Image Compressor', icon: Minimize, description: 'Reduce file size without losing quality' },
+  { id: 'resize', label: 'Image Resizer', icon: Maximize, description: 'Scale images to strict dimensions' },
+  { id: 'convert', label: 'Image Converter', icon: RefreshCcw, description: 'Convert between PNG, JPG, WEBP, etc.' },
+  { id: 'optimizer', label: 'Image Optimizer for Web', icon: Droplet, description: 'Perfect formats & sizes for web' },
+  { id: 'profile', label: 'Profile Image Creator', icon: RefreshCcw, description: 'Crop and create perfect avatars' },
+  { id: 'metadata', label: 'EXIF Metadata', icon: Info, description: 'View and strip image metadata' },
+  { id: 'base64', label: 'Base64 Codec', icon: Code, description: 'Encode/decode to Base64 strings' },
 ] as const;
 
 export function Sidebar({ currentView, onChangeView }: SidebarProps) {
@@ -74,13 +76,12 @@ export function Sidebar({ currentView, onChangeView }: SidebarProps) {
 
       {/* Mobile Top Header */}
       <div className="lg:hidden fixed top-0 left-0 right-0 z-[60] flex items-center justify-center h-[72px] border-b border-white/10 bg-[#0b1326] shadow-[0_4px_24px_rgba(0,0,0,0.5)]">
-        <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center shadow-lg shadow-indigo-500/20 px-0">
-            <Maximize className="w-4 h-4 text-white" />
-          </div>
-          <span className="text-xl font-semibold text-slate-200 tracking-wide">
-            Image Forge
-          </span>
+        <div className="flex items-center justify-center">
+          <img 
+            src="https://ik.imagekit.io/sourav7img/Image%20Forge.png" 
+            alt="Image Forge Logo" 
+            className="h-12 w-auto drop-shadow-md" 
+          />
         </div>
       </div>
 
@@ -95,12 +96,19 @@ export function Sidebar({ currentView, onChangeView }: SidebarProps) {
         "fixed inset-y-0 left-0 z-[80] w-72 bg-[#0b1326] lg:bg-white/[0.02] lg:backdrop-blur-3xl border-r border-white/10 px-4 py-6 transition-transform duration-300 lg:translate-x-0 lg:static flex flex-col shadow-[4px_0_24px_rgba(0,0,0,0.3)]",
         isOpen ? "translate-x-0" : "-translate-x-full"
       )}>
-        <div className="flex items-center gap-3 px-4 mb-8 mt-8">
-          <div className="flex w-8 h-8 rounded-lg bg-indigo-600 items-center justify-center">
-            <Maximize className="w-4 h-4 text-white" />
-          </div>
-          <h1 className="text-xl font-semibold text-slate-200">Image Forge</h1>
-        </div>
+        <button 
+          onClick={() => {
+            onChangeView("home");
+            setIsOpen(false);
+          }}
+          className="flex items-center px-4 mb-8 mt-16 lg:mt-8 text-left hover:opacity-80 transition-opacity"
+        >
+          <img 
+            src="https://ik.imagekit.io/sourav7img/Image%20Forge.png" 
+            alt="Image Forge Logo" 
+            className="h-14 w-auto drop-shadow-md" 
+          />
+        </button>
         
         <div className="flex-grow">
           {navContent}
